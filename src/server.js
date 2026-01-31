@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 
+import { errors } from 'celebrate';
 import { connectMongoDB } from './db/connectMongoDB.js';
 import { logger } from './middleware/logger.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
@@ -30,8 +31,12 @@ app.use(notesRouter);
 // 404 — якщо маршрут не знайдено
 app.use(notFoundHandler);
 
+app.use(errors());
+
 // Error — якщо під час запиту виникла помилка
 app.use(errorHandler);
+
+
 
 
 await connectMongoDB();
