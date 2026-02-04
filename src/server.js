@@ -9,6 +9,7 @@ import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 import notesRouter from './routes/notesRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -25,7 +26,7 @@ app.use(express.json());
 // });
 
 
-
+app.use(authRoutes);
 app.use(notesRouter);
 
 // 404 — якщо маршрут не знайдено
@@ -44,3 +45,5 @@ await connectMongoDB();
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
