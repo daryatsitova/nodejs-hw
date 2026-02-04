@@ -6,11 +6,14 @@ import createHttpError from "http-errors";
 //   res.status(200).json(notes);
 // };
 
-
 export const getAllNotes = async (req, res) => {
   const { page = 1, perPage = 10, tag, search } = req.query;
 
-  const skip = (page - 1) * perPage;
+  // Конвертуємо page і perPage у числа
+  const pageNumber = parseInt(page, 10);
+  const perPageNumber = parseInt(perPage, 10);
+
+  const skip = (pageNumber - 1) * perPageNumber;
   const notesQuery = Note.find({ userId: req.user._id });
 
   if (tag) {
@@ -18,25 +21,22 @@ export const getAllNotes = async (req, res) => {
   }
 
   if (search) {
-    notesQuery.where({
-      $text: { $search: search }
-    });
+    notesQuery.find({ $text: { $search: search } });
   }
 
   const [totalNotes, notes] = await Promise.all([
     notesQuery.clone().countDocuments(),
-    notesQuery.skip(skip).limit(perPage),
+    notesQuery.skip(skip).limit(perPageNumber),
   ]);
-  const totalPages = Math.ceil(totalNotes / perPage);
+  const totalPages = Math.ceil(totalNotes / perPageNumber);
 
   res.status(200).json({
-    page,
-    perPage,
+    page: pageNumber,
+    perPage: perPageNumber,
     totalNotes,
     totalPages,
     notes,
-  }
-  );
+  });
 };
 
 export const getNoteById = async (req, res) => {
@@ -45,12 +45,12 @@ export const getNoteById = async (req, res) => {
     _id: noteId,
     userId: req.user._id,
   });
-if (!note) {
-    throw createHttpError(404,"Note not found");};
+  if (!note) {
+    throw createHttpError(404, "Note not found");
+  }
 
   res.status(200).json(note);
 };
-
 
 export const createNote = async (req, res) => {
   const note = await Note.create({ ...req.body, userId: req.user._id });
