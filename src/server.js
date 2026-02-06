@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import { errors } from 'celebrate';
 import { connectMongoDB } from './db/connectMongoDB.js';
@@ -19,6 +20,8 @@ const PORT = process.env.PORT ?? 3000;
 app.use(logger);
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+
 
 // // Корневой маршрут
 // app.get('/', (req, res) => {
